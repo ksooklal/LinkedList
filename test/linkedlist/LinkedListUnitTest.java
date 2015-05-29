@@ -2,6 +2,7 @@ package linkedlist;
 
 import static org.junit.Assert.*;
 
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -225,6 +226,7 @@ public class LinkedListUnitTest {
 	@Test
 	public void testGet(){
 		LinkedList<String> list = new LinkedList<String>();
+		ArrayList<String> list2 = new ArrayList<String>();
 		list.add("First");
 		list.add("Second");
 		list.add("Third");
