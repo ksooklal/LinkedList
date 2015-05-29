@@ -11,7 +11,7 @@ public class LinkedList<E> implements List<E>, Deque<E>, Cloneable, java.io.Seri
 	private static final long serialVersionUID = 1234234234L;
 	private Node<E> head = null;
 	private int size = 0;
-	
+
 	private static class Node<T> {
 		private T data;
 		private Node<T> next;
@@ -307,10 +307,10 @@ public class LinkedList<E> implements List<E>, Deque<E>, Cloneable, java.io.Seri
 			}
 			return false;
 		}
-		
+
 		Node<E> prev = this.head;
 		Node<E> curr = this.head.next;
-		
+
 		while (curr != null){
 			if (o == null){
 				if (curr.data == null){
@@ -511,14 +511,52 @@ public class LinkedList<E> implements List<E>, Deque<E>, Cloneable, java.io.Seri
 
 	@Override
 	public int indexOf(Object o) {
-		// TODO Auto-generated method stub
-		return 0;
+		if (this.head == null){
+			return -1;
+		}
+		if (this.head.next == null){
+			return (o == null) ? ((this.head.data == null) ? 0 : -1) : (o.equals(this.head.data) ? 0 : -1);
+		} 
+		Node<E> pointer = this.head;
+		int index = 0;
+		while (pointer != null){
+			if (o == null){
+				if (pointer.data == null){
+					return index;
+				}
+			} else if (o.equals(pointer.data)){
+				return index;
+			} else {
+				pointer = pointer.next;
+				index++;
+			}
+		}
+		return -1;
 	}
 
 	@Override
 	public int lastIndexOf(Object o) {
-		// TODO Auto-generated method stub
-		return 0;
+		if (this.head == null){
+			return -1;
+		}
+		if (this.head.next == null){
+			return (o == null) ? ((this.head.data == null) ? 0 : -1) : (o.equals(this.head.data) ? 0 : -1);
+		} 
+		Node<E> pointer = this.head;
+		int index = 0;
+		int foundIndex = -1;
+		while (pointer != null){
+			if (o == null){
+				if (pointer.data == null){
+					foundIndex = index;
+				}
+			} else if (o.equals(pointer.data)){
+				foundIndex = index;
+			} 
+			pointer = pointer.next;
+			index++;
+		}
+		return foundIndex;
 	}
 
 	@Override
@@ -538,7 +576,7 @@ public class LinkedList<E> implements List<E>, Deque<E>, Cloneable, java.io.Seri
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public String toString(){
 		if (this.head == null){

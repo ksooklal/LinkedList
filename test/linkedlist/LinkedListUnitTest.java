@@ -1,11 +1,15 @@
 package linkedlist;
 
 import static org.junit.Assert.*;
+
+import java.util.Set;
+import java.util.TreeSet;
+
 import org.junit.Test;
 
+@SuppressWarnings(value = "rawtypes")
 public class LinkedListUnitTest {
 
-	@SuppressWarnings(value = "rawtypes")
 	@Test
 	public void testConstructor(){
 		LinkedList<String> list = new LinkedList<String>();
@@ -153,7 +157,12 @@ public class LinkedListUnitTest {
 
 	@Test
 	public void testIsEmpty() {
-		
+		LinkedList<Set> listOfSets = new LinkedList<Set>();
+		assertEquals(true, listOfSets.isEmpty());
+		assertEquals(true, listOfSets.add(new TreeSet()));
+		assertEquals(false, listOfSets.isEmpty());
+		assertEquals(new TreeSet(), listOfSets.remove());
+		assertEquals(true, listOfSets.isEmpty());
 	}
 
 	@Test
@@ -221,7 +230,21 @@ public class LinkedListUnitTest {
 		list.add("Third");
 		list.add("Fourth");
 		assertEquals("Third", list.get(2));
+		
+		assertEquals("Index (-123) is out of range for list of size: 4",  testGetWithExceptions(list, -123));
+		assertEquals("Fourth", testGetWithExceptions(list, 3));
 	}
+	
+	public static <T> Object testGetWithExceptions(LinkedList<T> list, int index){
+		Object element = null;
+		try{
+			element = list.get(index);
+		} catch (IndexOutOfBoundsException ie){
+			element = ie.getMessage();
+		}
+		return element;
+	}
+
 
 	@Test
 	public void testSet() {
