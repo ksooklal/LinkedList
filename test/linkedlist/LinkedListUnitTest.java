@@ -1,7 +1,6 @@
 package linkedlist;
 
 import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 public class LinkedListUnitTest {
@@ -66,7 +65,6 @@ public class LinkedListUnitTest {
 		assertEquals(9129, newStoredArray[0]);
 		assertEquals(123901, newStoredArray[1]);
 		assertEquals(12309, newStoredArray[2]);
-
 	}
 
 	@Test
@@ -264,4 +262,16 @@ public class LinkedListUnitTest {
 		
 	}
 
+	@Test
+	public void testToString(){
+		LinkedList<Integer> list = new LinkedList<Integer>();
+		assertEquals("{}", list.toString());
+		assertEquals(true, list.add(1));
+		assertEquals("{1}", list.toString());
+		
+		for (int i = 2; i <= 10; i++){
+			list.addLast(i);
+		}
+		assertEquals("{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}", list.toString());
+	}
 }
