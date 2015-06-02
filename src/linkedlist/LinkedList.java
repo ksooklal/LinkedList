@@ -1,6 +1,6 @@
 package linkedlist;
 
-import java.util.Arrays;
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.Deque;
 import java.util.Iterator;
@@ -95,12 +95,24 @@ public class LinkedList<E> implements List<E>, Deque<E>, Cloneable, java.io.Seri
 	@Override
 	public E removeLast() {
 		if (this.head == null){
-			return null;
+			throw new UnsupportedOperationException("The list is empty, no last element found.");
+		} else if (this.head.next == null){
+			E data = this.head.data;
+			this.head = null;
+			size = 0;
+			return data;
+		} else {
+			E data = this.head.data;
+			Node<E> curr = this.head;
+			Node<E> next = this.head.next;
+			while (next != null){
+				curr = next;
+				data = next.data;
+				next = next.next;
+			}
+			curr.next = null;
+			return data;
 		}
-		E data = this.head.data;
-		this.head = this.head.next;
-		size--;
-		return data;
 	}
 
 	@Override
@@ -244,31 +256,31 @@ public class LinkedList<E> implements List<E>, Deque<E>, Cloneable, java.io.Seri
 
 	@Override
 	public Object[] toArray() {
-		if (this.size == 0 || this.head == null){
-			return new Object[0];
-		}
-		Object [] array = new Object[size];
-		Node<E> pointer = this.head;
-		int arrayIndex = 0;
-		while (pointer.next != null){
-			array[arrayIndex++] = pointer.data;
-			pointer = pointer.next;
-		}
-		return array;
+		return toArray(new Object[this.size()]);
 	}
 
 	@SuppressWarnings({ "unchecked" })
 	@Override
-	public <T> T[] toArray(T[] a) {
-		if (this.size == 0 || this.head == null){
-			return Arrays.copyOf(a, 0);
+	public <T> T[] toArray(T[] array) {
+		if (array == null){
+			throw new NullPointerException("Array provided cannot be null.");
 		}
-		T[] array = Arrays.copyOf(a, this.size);
-		Object[] objectsArray = this.toArray();
-		int arrayIndex = 0;
-		for (Object object: objectsArray){
-			array[arrayIndex++] = (T) object;
+		
+		int size = this.size();
+		
+		if (array.length < size){
+			return toArray((T []) 
+					Array.newInstance(array.getClass().getComponentType(), this.size()));
 		}
+			
+		for (int i = 0; i < size; i++){
+			array[i] = (T) this.get(i);
+		}
+		
+		for (int i = size; i < array.length; i++){
+			array[i] = null;
+		}
+		
 		return array;
 	}
 
@@ -591,3 +603,5 @@ public class LinkedList<E> implements List<E>, Deque<E>, Cloneable, java.io.Seri
 		return start.append("}").toString();
 	}
 }
+
+
