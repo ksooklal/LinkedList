@@ -3,12 +3,14 @@ package linkedlist;
 import static org.junit.Assert.*;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Set;
+import java.util.Stack;
 import java.util.TreeSet;
 
 import org.junit.Test;
 
-@SuppressWarnings(value = "rawtypes")
+@SuppressWarnings(value = {"rawtypes", "unchecked"})
 public class LinkedListUnitTest {
 
 	@Test
@@ -141,11 +143,13 @@ public class LinkedListUnitTest {
 	@Test
 	public void testRemoveFirst(){
 		LinkedList<Boolean> list = new LinkedList<Boolean>();
-		assertEquals("The list is empty, no first element found.", list.removeFirst());
+		assertEquals(null, testRemoveFirstWithExceptions(null));
+		assertEquals("The list is empty, no first element found.", testRemoveFirstWithExceptions(list));
 		assertEquals(true, list.add(true));
 		assertEquals(true, list.add(false));
 		assertEquals(2, list.size());
-		
+		assertEquals(true, testRemoveFirstWithExceptions(list));
+		assertEquals(false, list.removeFirst());
 		
 	}
 
@@ -171,14 +175,52 @@ public class LinkedListUnitTest {
 
 	@Test
 	public void testPeekFirst() {
+		LinkedList<Short> list = new LinkedList<Short>();
+		
+		assertEquals(null, list.peekFirst());
+		short a = 234;
+		assertEquals(true, list.add(a = 234));
+		assertEquals(true, list.add(a++));
+		assertEquals(--a, list.peekFirst().shortValue());
 	}
 
 	@Test
 	public void testPeekLast() {
+		LinkedList<Short> list = new LinkedList<Short>();
+		
+		assertEquals(null, list.peekLast());
+		short a = 234;
+		assertEquals(true, list.add(a = 234));
+		assertEquals(234, list.peekLast().shortValue());
+		assertEquals(true, list.add(a++));
+		assertEquals(--a, list.peekFirst().shortValue());
 	}
 
 	@Test
 	public void testRemoveFirstOccurrence() {
+		LinkedList<Long> list = new LinkedList<Long>();
+		assertEquals(false, list.removeFirstOccurrence("ASFDA"));
+		assertEquals(true, list.add(23423l));
+		assertEquals(1, list.size());
+		assertEquals(false, list.removeFirstOccurrence(new Long(234234)));
+		assertEquals(false, list.removeFirstOccurrence(null));
+		assertEquals(true, list.removeFirstOccurrence(23423l));
+		assertEquals(0, list.size());
+		assertEquals(true, list.add(null));
+		assertEquals(true, list.removeFirstOccurrence(null));
+		assertEquals(0, list.size());
+		
+		assertEquals(true, list.add(new Long(234)));
+		assertEquals(true, list.add(new Long(234234)));
+		assertEquals(true, list.add(new Long(2342390)));
+		assertEquals(3, list.size());
+		assertEquals(false, list.removeFirstOccurrence(234234234234l));
+		assertEquals(true, list.removeFirstOccurrence(2342390l));
+		assertEquals(2, list.size());
+		assertEquals(true, list.add(null));
+		assertEquals(true, list.add(null));
+		assertEquals(true, list.removeFirstOccurrence(null));
+		assertEquals(3, list.size());
 	}
 
 	@Test
@@ -191,6 +233,29 @@ public class LinkedListUnitTest {
 
 	@Test
 	public void testRemove() {
+		LinkedList<Long> list = new LinkedList<Long>();
+		assertEquals(false, list.remove("ASFDA"));
+		assertEquals(true, list.add(23423l));
+		assertEquals(1, list.size());
+		assertEquals(false, list.remove(new Long(234234)));
+		assertEquals(false, list.remove(null));
+		assertEquals(true, list.remove(23423l));
+		assertEquals(0, list.size());
+		assertEquals(true, list.add(null));
+		assertEquals(true, list.remove(null));
+		assertEquals(0, list.size());
+		
+		assertEquals(true, list.add(new Long(234)));
+		assertEquals(true, list.add(new Long(234234)));
+		assertEquals(true, list.add(new Long(2342390)));
+		assertEquals(3, list.size());
+		assertEquals(false, list.remove(234234234234l));
+		assertEquals(true, list.remove(2342390l));
+		assertEquals(2, list.size());
+		assertEquals(true, list.add(null));
+		assertEquals(true, list.add(null));
+		assertEquals(true, list.remove(null));
+		assertEquals(3, list.size());
 	}
 
 	@Test
@@ -233,7 +298,19 @@ public class LinkedListUnitTest {
 
 	@Test
 	public void testContains() {
-
+		LinkedList<Float> list = new LinkedList<Float>();
+		assertEquals(false, list.contains("here"));
+		assertEquals(true, list.add(2.354f));
+		assertEquals(false, list.contains(null));
+		assertEquals(true, list.add(234f));
+		assertEquals(true, list.add(234234f));
+		assertEquals(3, list.size());
+		assertEquals(false, list.contains(null));
+		assertEquals(true, list.add(null));
+		assertEquals(true, list.contains(null));
+		assertEquals(true, list.contains(234f));
+		assertEquals(false, list.contains(234));
+	
 	}
 
 	@Test
@@ -273,9 +350,58 @@ public class LinkedListUnitTest {
 
 	}
 
+	private static <T> Object testRemoveAllWithExceptions(LinkedList<T> list, Collection<?> c){
+		Object returned = null;
+		if (list != null){
+			try{
+				returned = list.removeAll(c);
+			} catch (NullPointerException npe){
+				returned = npe.getMessage();
+			}
+		}
+		return returned;
+	}
+	
 	@Test
 	public void testRemoveAll() {
-
+		LinkedList<Character> list = new LinkedList<Character>();
+		assertEquals(null, testRemoveAllWithExceptions(null, null));
+		assertEquals("Null collection provided.", testRemoveAllWithExceptions(list, null));
+		assertEquals(false, testRemoveAllWithExceptions(list, new Stack()));
+		Stack stack = new Stack();
+		stack.add('c');
+		assertEquals(false, testRemoveAllWithExceptions(list, stack));
+		assertEquals(true, list.add('d'));
+		assertEquals(true, list.add('a'));
+		assertEquals(true, list.add('b'));
+		assertEquals(false, testRemoveAllWithExceptions(list, stack));
+		assertEquals(3, list.size());
+		assertEquals(true, list.add('e'));
+		assertEquals(false, testRemoveAllWithExceptions(list, stack));
+		assertEquals(true, list.add('c'));
+		assertEquals(true, testRemoveAllWithExceptions(list, stack));
+		assertEquals(4, list.size());
+		assertEquals(true, list.add('c'));
+		stack.add('e');
+		assertEquals(true, testRemoveAllWithExceptions(list, stack));
+		assertEquals(3, list.size());
+		assertEquals(true, list.add('c'));
+		assertEquals(true, list.add('e'));
+		stack.add('f');
+		assertEquals(true, testRemoveAllWithExceptions(list, stack));
+		assertEquals(3, list.size());
+		assertEquals(false, list.contains('c'));
+		assertEquals(true, list.contains('b'));
+		stack.add('d');
+		stack.add('b');
+		stack.add('g');
+		stack.add('h');
+		assertEquals(true, testRemoveAllWithExceptions(list, stack));
+		assertEquals(1, list.size());
+		stack.push('a');
+		stack.push('c');
+		assertEquals(true, testRemoveAllWithExceptions(list, stack));
+		assertEquals(0, list.size());
 	}
 
 	@Test
@@ -308,6 +434,7 @@ public class LinkedListUnitTest {
 
 		assertEquals("Index (-123) is out of range for list of size: 4",  testGetWithExceptions(list, -123));
 		assertEquals("Fourth", testGetWithExceptions(list, 3));
+		assertEquals(null, testGetWithExceptions(null, 123));
 	}
 
 	private static <T> Object testGetWithExceptions(LinkedList<T> list, int index){
@@ -340,11 +467,68 @@ public class LinkedListUnitTest {
 
 	@Test
 	public void testIndexOf(){
+		LinkedList<String> list = new LinkedList<String>();
+		assertEquals(-1, list.indexOf("2"));
+		assertEquals(true, list.add("234"));
+		assertEquals(0, list.indexOf("234"));
+		assertEquals(true, list.add("234234"));
+		assertEquals(-1, list.indexOf("2"));
+		assertEquals(-1, list.indexOf(null));
+		assertEquals(1, list.indexOf("234234"));
+		assertEquals(true, list.add("35"));
+		assertEquals(-1, list.indexOf(35));
+		assertEquals(1, list.indexOf("234234"));
+		assertEquals(2, list.indexOf("35"));
+		assertEquals(true, list.remove("35"));
+		assertEquals(-1, list.indexOf("35"));
+		assertEquals(true, list.add(null));
+		assertEquals(2, list.indexOf(null));
 
+		list.clear();
+		assertEquals(0, list.size());
+		assertEquals(true, list.add(null));
+		assertEquals(0, list.indexOf(null));
+		assertEquals(true, list.add(null));
+		assertEquals(0, list.indexOf(null));
+		assertEquals(-1, list.indexOf(234));
+		assertEquals(null, list.set(0, "asdfasdf"));
+		assertEquals(-1, list.indexOf("23423"));
+		assertEquals(0, list.indexOf("asdfasdf"));
+		assertEquals(true, list.add("asdf"));
+		assertEquals(true, list.add(null));
+		assertEquals(true, list.add(null));
+		assertEquals(1, list.indexOf(null));
 	}
 
 	@Test
 	public void testlastIndexOf(){
+		LinkedList<String> list = new LinkedList<String>();
+		assertEquals(-1, list.lastIndexOf("2"));
+		
+		assertEquals(true, list.add("234"));
+		assertEquals(true, list.add("234"));
+		assertEquals(1, list.lastIndexOf("234"));
+		assertEquals(true, list.add("234"));
+		assertEquals(2, list.lastIndexOf("234"));
+
+
+		assertEquals(-1, list.lastIndexOf("2"));
+		assertEquals(true, list.add("2"));
+		assertEquals(3, list.lastIndexOf("2"));
+		assertEquals(true, list.add("234"));
+		
+		list.clear();
+		assertEquals(0, list.size());
+		assertEquals(true, list.add(null));
+		assertEquals(0, list.lastIndexOf(null));
+		assertEquals(-1, list.lastIndexOf(234));
+		assertEquals(null, list.set(0, "asdfasdf"));
+		assertEquals(-1, list.lastIndexOf("23423"));
+		assertEquals(0, list.lastIndexOf("asdfasdf"));
+		assertEquals(true, list.add("asdf"));
+		assertEquals(true, list.add(null));
+		assertEquals(true, list.add(null));
+		assertEquals(3, list.lastIndexOf(null));
 	}
 
 	@Test

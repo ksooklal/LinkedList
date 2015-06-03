@@ -20,6 +20,10 @@ public class LinkedList<E> implements List<E>, Deque<E>, Cloneable, java.io.Seri
 			this.data = data;
 			this.next = null;
 		}
+		
+		public String toString(){
+			return "" + data;
+		}
 	}
 
 	public LinkedList(){
@@ -158,22 +162,65 @@ public class LinkedList<E> implements List<E>, Deque<E>, Cloneable, java.io.Seri
 			return null;
 		}
 		Node<E> pointer = this.head;
-		while (pointer.next == null){
+		E data = this.head.data;
+		while (pointer != null){
+			data = pointer.data;
 			pointer = pointer.next;
 		}
-		return pointer.data;
+		return data;
 	}
 
 	@Override
 	public boolean removeFirstOccurrence(Object o) {
-		// TODO Auto-generated method stub
+		if (this.head == null){
+			return false;
+		}
+		if (o == null){
+			if (this.head.data == null){
+				this.head = this.head.next;
+				size--;
+				return true;
+			}
+		} else if (o.equals(this.head.data)){
+			this.head = this.head.next;
+			size--;
+			return true;
+		}
+		if (this.head.next == null){
+			return false;
+		}
+
+		Node<E> prev = this.head;
+		Node<E> curr = this.head.next;
+
+		while (curr != null){
+			if (o == null){
+				if (curr.data == null){
+					prev.next = curr.next;
+					size--;
+					return true;
+				}
+			} else if (o.equals(curr.data)) {
+				prev.next = curr.next;
+				size--;
+				return true;
+			}
+			prev = curr;
+			curr = curr.next;
+		}
 		return false;
 	}
 
 	@Override
 	public boolean removeLastOccurrence(Object o) {
-		// TODO Auto-generated method stub
-		return false;
+		int lastOccurrenceIndex = this.lastIndexOf(o);
+		if (lastOccurrenceIndex < 0){
+			return false;
+		} else {
+			int originalSize = this.size;
+			this.remove(o);
+			return originalSize != this.size;
+		}
 	}
 
 	@Override
@@ -236,7 +283,7 @@ public class LinkedList<E> implements List<E>, Deque<E>, Cloneable, java.io.Seri
 			return false;
 		}
 		Node<E> pointer = this.head;
-		while (pointer.next != null){
+		while (pointer != null){
 			if (o == null){
 				if (pointer.data == null){
 					return true;
@@ -244,6 +291,7 @@ public class LinkedList<E> implements List<E>, Deque<E>, Cloneable, java.io.Seri
 			} else if (o.equals(pointer.data)){
 				return true;
 			}
+			pointer = pointer.next;
 		}
 		return false;
 	}
@@ -305,18 +353,19 @@ public class LinkedList<E> implements List<E>, Deque<E>, Cloneable, java.io.Seri
 		if (this.head == null){
 			return false;
 		}
-		if (this.head.next == null){
-			if (o == null){
-				if (this.head.data == null){
-					this.head = null;
-					size--;
-					return true;
-				}
-			} else if (o.equals(this.head.data)) {
-				this.head = null;
+		
+		if (o == null){
+			if (this.head.data == null){
+				this.head = this.head.next;
 				size--;
 				return true;
 			}
+		} else if (o.equals(this.head.data)){
+			this.head = this.head.next;
+			size--;
+			return true;
+		}
+		if (this.head.next == null){
 			return false;
 		}
 
@@ -330,7 +379,7 @@ public class LinkedList<E> implements List<E>, Deque<E>, Cloneable, java.io.Seri
 					size--;
 					return true;
 				}
-			} else if (o.equals(this.head.data)) {
+			} else if (o.equals(curr.data)) {
 				prev.next = curr.next;
 				size--;
 				return true;
@@ -405,10 +454,14 @@ public class LinkedList<E> implements List<E>, Deque<E>, Cloneable, java.io.Seri
 		if (c.isEmpty()){
 			return false;
 		}
+		if (this.head == null){
+			return false;
+		}
 		int originalSize = this.size;
 		Iterator<?> iterator = c.iterator();
 		while (iterator.hasNext()){
-			this.remove(iterator.next());
+			Object o = iterator.next();
+			this.remove(o);
 		}
 		return originalSize != this.size;
 	}
@@ -517,8 +570,30 @@ public class LinkedList<E> implements List<E>, Deque<E>, Cloneable, java.io.Seri
 
 	@Override
 	public E remove(int index) {
-		// TODO Auto-generated method stub
-		return null;
+		if (index < 0 || index >= this.size){
+			throw new UnsupportedOperationException("Index (" + index + ") is out of range for list of size: " + size);
+		}
+		if (index == 0){
+			E data = this.head.data;
+			this.head = this.head.next;
+			size--;
+			return data;
+		}
+		Node<E> previous = this.head;
+		Node<E> curr = this.head.next;
+		E data = null;
+		int currentIndex = 1;
+		while (curr.next != null){
+			if (currentIndex == index){
+				data = curr.data;
+				previous.next = curr.next;
+				size--;
+				return data;
+			}
+			curr = curr.next;
+			currentIndex++;
+		}
+		return data;
 	}
 
 	@Override
@@ -538,10 +613,9 @@ public class LinkedList<E> implements List<E>, Deque<E>, Cloneable, java.io.Seri
 				}
 			} else if (o.equals(pointer.data)){
 				return index;
-			} else {
-				pointer = pointer.next;
-				index++;
 			}
+			pointer = pointer.next;
+			index++;
 		}
 		return -1;
 	}
@@ -597,7 +671,7 @@ public class LinkedList<E> implements List<E>, Deque<E>, Cloneable, java.io.Seri
 		StringBuffer start = new StringBuffer("{" + this.head.data);
 		Node<E> pointer = this.head.next;
 		while (pointer != null){
-			start.append(", " + pointer.data);
+			start.append(", " + pointer.toString());
 			pointer = pointer.next;
 		}
 		return start.append("}").toString();
